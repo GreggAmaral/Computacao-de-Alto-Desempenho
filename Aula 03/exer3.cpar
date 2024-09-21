@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <math.h>
+#include <sys/time.h>
+#include <stdlib.h>
+#include "mede_time.h"
+
+shared int ocorrencias;
+shared int size;
+shared int x;
+shared int contador[4]; 
+
+shared double a[2000][2000];
+
+task spec init();
+task spec busca();
+
+task body init() {
+    int i,j;
+    forall i=0 to (size-1) {  
+        for (j=0;j<size;j++)
+            a[i][j]=i*j;
+    }
+}
+
+task body busca(){
+    int i,j;
+    forall i=0 to (size-1){
+        for (j=0;j<size;j++){
+            if (a[i][j] == x){
+                contador[get_mi_id()]++; 
+            }
+        }
+    }
+  }
+
+main(){
+    contador[0]= 0;
+    contador[1]= 0;
+    contador[2]= 0;
+    contador[3]= 0;
+    printf("Tamanho da matriz (100 ou 1000 ou 2000): ");
+    fflush(stdout);
+    scanf("%d",&size);
+    printf("digite um numero de 0 a 9999:");
+    fflush(stdout);
+    scanf("%d",&x);
+    printf("%d\n",x);
+    fflush(stdout); 
+    ocorrencias = 0;
+    create 4, init();
+    wait_proc(init);
+    TIMER_CLEAR;
+    TIMER_START; 
+    create 4, busca();
+    wait_proc(busca);
+    TIMER_STOP;
+    ocorrencias = contador[0]+contador[1]+contador[2]+contador[3];
+    printf ("TEMPO [%d]: %12.7f\n",size,TIMER_ELAPSED );
+    fflush(stdout);
+    printf("NUMERO DE OCORRENCIAS=%d\n",ocorrencias);
+    fflush(stdout);
+}
+

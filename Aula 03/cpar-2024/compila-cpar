@@ -1,0 +1,10 @@
+./ccpar-2022 $1.cpar
+gcc -O3 -o $1 $1.c bib-pthreads.o -lpthread -lm 
+
+rm $1.c
+rm vgp_$1.h
+rm vsl_$1.h
+rm type_$1.h
+rm cob_$1
+rm cob_$1.h
+rm partask_$1.h

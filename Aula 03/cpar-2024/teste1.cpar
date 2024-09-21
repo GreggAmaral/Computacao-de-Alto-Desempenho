@@ -1,0 +1,11 @@
+#include <stdio.h>
+task spec tarefa();
+task body tarefa()
+{
+    printf("TESTE\n");
+}
+main()
+{
+  printf("INICIO\n");
+  create 1,tarefa();
+}

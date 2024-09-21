@@ -1,0 +1,81 @@
+#include <stdio.h>
+
+task spec tar1();
+task spec tar2();
+task spec tar3();
+task spec tar4();
+task spec tar5();
+task spec tar6();
+
+task body tar1() {
+    int i;
+    for(i = 0; i < 10; i++) {
+        printf("%c",'a');
+        fflush(stdout);
+    }
+}
+
+task body tar2() {
+    int i;
+    for(i = 0; i < 10; i++) {
+        printf("%c",'b');
+        fflush(stdout);
+    }
+}
+
+task body tar3() {
+    int i;
+    for(i = 0; i < 10; i++) {
+        printf("%c",'c');
+        fflush(stdout);
+    }
+}
+
+task body tar4() {
+    int i;
+    for(i = 0; i < 10; i++) {
+        printf("%c",'d');
+        fflush(stdout);
+    }
+}
+
+task body tar5() {
+    int i;
+    for(i = 0; i < 10; i++) {
+        printf("%c",'e');
+        fflush(stdout);
+    }
+}
+
+task body tar6() {
+    int i;
+    for(i = 0; i < 10; i++) {
+        printf("%c",'f');
+        fflush(stdout);
+    }
+}
+
+main(){
+
+    printf("SEQ1\n");
+ 	fflush(stdout);
+ 	cobegin
+        create 1,tar1();
+        create 1,tar2();
+        wait_proc(tar1);
+        wait_proc(tar2);
+        printf("\nSEQ2\n");
+ 	    fflush(stdout);
+        create 1,tar5();
+        create 1,tar6();
+
+ 	also
+    	create 1,tar3();
+        create 1,tar4();
+        wait_proc(tar3);
+        wait_proc(tar4);
+        printf("\nSEQ3\n");
+ 	    fflush(stdout);
+	coend
+
+}

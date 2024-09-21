@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <math.h>
+#include <sys/time.h>
+#include <stdlib.h>
+#include "mede_time.h"
+
+shared int size;
+
+shared double a[2000][2000];
+shared double b[2000][2000];
+shared double c[2000][2000]; 
+
+task spec init();
+task spec mult();
+
+task body init() {
+    int i,j,k;
+    forall i=0 to (size-1){   
+        for (j=0;j<size;j++){
+            a[i][j]=0;
+            b[i][j]=0;
+            for (k=0;  k<size;  k++){
+                a[i][j] = a[i][j]+0.2*i+1.03*j+1.5*k;
+                b[i][j] = b[i][j]+0.3*i+0.2*j+1.7*k;
+            }
+            c[i][j]=0;
+        }
+    }
+}
+
+task body mult(){
+    int i,j,k;
+    forall i=0 to (size-1){  
+        for (k=0;k<size;k++)
+            for (j=0;j<size;j++)
+                c[i][j]=c[i][j]+a[i][k]*b[k][j];
+    }
+}
+
+
+
+main(){
+    
+    printf("Tamanho da matriz: ");
+    fflush(stdout);
+    scanf("%d",&size);
+    TIMER_CLEAR;
+    TIMER_START;
+    create 4, init();
+    wait_proc(init);
+    create 4, mult();
+    wait_proc(mult);
+    TIMER_STOP;
+    printf ("Tempo da operacao de tamanho %d: %12.7f\n",size,TIMER_ELAPSED);
+    fflush(stdout);
+    printf("c[ 0][0]=%f c[ 300][300]=%f c[ 999][999]=%f\n",c[0][0],c[300][300],c[999][999]);
+    fflush(stdout);
+}
