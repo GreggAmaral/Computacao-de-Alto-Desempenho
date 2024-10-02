@@ -108,11 +108,9 @@ char **argv;
     TIMER_STOP;
     printf ("TEMPO INICIA [SIZE %d]: %12.7f\n",size,TIMER_ELAPSED);
     printf("a[0][0]=%f   a[15][20]=%f  b[15][20]=%f  b[%d][%d]=%f \n",((matrizes *)matriz)->a[0][0],((matrizes *)matriz)->a[15][20],size-1,size-1,((matrizes *)matriz)->b[15][20],((matrizes *)matriz)->b[size-1][size-1]);
+    
     TIMER_CLEAR;
     TIMER_START;
-    id_matriz = shmget(IPC_PRIVATE, sizeof(matrizes), 0777 | IPC_CREAT);
-    matriz = shmat(id_matriz, 0, 0);
-
     //processo principal inicializa as matrizes   -  3 processos
     n_iter = size/(n_processos + 1);
     id_proc=-1;
