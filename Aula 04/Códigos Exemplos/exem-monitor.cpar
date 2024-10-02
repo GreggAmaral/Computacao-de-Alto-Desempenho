@@ -1,0 +1,83 @@
+#include <stdio.h>
+// inicia vetor[2000] de inteiros  com i
+// vetor[100]=5000 - indica fim
+shared int vetor[2000];
+void inicia_vetor()
+{
+	int i;
+	for(i=0;i<100;i++)
+  		vetor[i]=i;
+	vetor[99]=5000;
+}
+
+monitor buffer
+shared int dado;
+
+/* Declaracao das funcoes do monitor */
+{
+	int leia()
+	{
+  		int n;
+  		when(dado != -1){ 
+  			n = dado;
+      			dado = -1;
+    		}
+   		 return n;
+  	}
+
+  	void escreva(num)
+  		int num;
+  	{
+  		when(dado == -1){
+  			dado = num;
+    		}
+  	}
+
+}  
+
+/* Iniciacao das variaveis do monitor */
+{
+	dado = -1;
+}
+
+task spec produz();
+task body produz()
+{
+	int x;
+	int i=0;
+	do
+	{ 
+		x = vetor[i];
+		i++;
+		buffer.escreva(x);
+      		printf("%d   ",x);
+      		fflush(stdout);
+	} while (x != 5000);
+
+  	printf("FIM ESCRITA\n");
+  	fflush(stdout);
+}
+
+task spec consome();
+task body consome()
+{
+  	int x = -1;
+   
+  	while (x != 15000){ 
+      		x = buffer.leia();
+      		x= x+10000;
+      		printf("%d   ",x);
+      		fflush(stdout);
+  	}
+  	printf("FIM LEITURA\n");
+  	fflush(stdout);
+}
+
+void main()
+{
+	inicia_vetor();
+   	create 1,produz();
+   	create 1,consome();
+	wait_all();
+     	printf("\n FIM\n");
+}

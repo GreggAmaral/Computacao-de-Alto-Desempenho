@@ -1,0 +1,58 @@
+/*soma de elementos de um vetor  - solucao nao adequada - sequencializada*/
+
+#include <stdio.h>
+#include "mede_time.h"
+
+#define SIZE 2000
+
+shared int a[2000];
+shared int soma[8];
+shared Semaph S;
+
+
+task spec init_vetor();
+task spec soma_elementos();
+
+/*inicia matriz*/
+task body init_vetor()
+{ 
+	int i;
+	forall i = 0 to (SIZE-1){  
+    	a[i] = 1;
+    }
+}
+
+/*soma dos elementos*/
+task body soma_elementos()
+{
+     int i;
+     forall i = 0 to (SIZE-1){
+          soma[get_mi_id()] = soma[get_mi_id()] + a[i];
+     }
+}
+ 
+main()
+{
+     int nprocs = 0;
+     while (nprocs <1 || nprocs > 8 ) {
+          printf ("Numero de processadores: ");
+          fflush(stdout);
+          scanf("%d",&nprocs);
+          if (nprocs <1 || nprocs > 8 ){
+               printf ("Entrada inválida, escolha número entre 1 a 8!\n");
+               fflush(stdout);
+          }
+     }
+     TIMER_CLEAR;
+     TIMER_START; 
+     create nprocs, init_vetor();
+     wait_all();
+     create nprocs, soma_elementos();
+     wait_all();
+     TIMER_STOP;
+     soma[0] = soma[0]+soma[1]+soma[2]+soma[3]+soma[4]+soma[5]+soma[6]+soma[7];      
+     printf("soma=%d \n",soma[0]);
+     fflush(stdout);
+     printf ("Tempo de execucao: %12.7f\n",TIMER_ELAPSED );
+     fflush(stdout);
+}
