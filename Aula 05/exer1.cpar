@@ -1,0 +1,105 @@
+#include <stdio.h>
+
+shared Semaph fork[5];
+int p;
+shared int x[5];
+shared int y[5];
+
+void thinking(i)
+int i;
+{  
+        int a[1000000];
+        int b[1000000];
+
+	for(p = 0; p < 1000; p++)
+		a[p] = p;
+
+	b[0] = 10; 
+
+	for(p = 1; p < 1000; p++){  //simulando thinking
+		a[p]=(a[p]+b[p-1]+p)%14;
+		b[p]=2*a[p]+7;
+	}
+        x[i]=b[99];
+}
+
+void eating(i)
+int i;
+{  
+        int a[1000000];
+        int b[1000000];
+        printf("Philosopher %d eating\n",i);
+        fflush(stdout);
+	for(p = 0; p < 100; p++)
+		a[p] = p;
+   
+	b[0] = 10;
+
+	for(p = 1; p < 100; p++){  //simulando eating
+		a[p]=(a[p]+b[p-1]+p)%15;
+		b[p]=2*a[p]+7;
+	}
+        y[i]=b[9];
+}
+
+void Philosopher(i)
+int i;
+{ 
+	int k;
+
+	for(k = 0; k < 1000; k++) {  
+		thinking(i);
+		lock(&fork[i%5]);
+		lock(&fork[(i+1)%5]);
+		eating(i);
+		unlock(&fork[i%5]);
+		unlock(&fork[(i+1)%5]);
+	}
+}
+
+void Philosopher5(i) 
+int i;
+{
+    int k;
+
+	for(k = 0; k < 1000; k++) {  
+		thinking(i);
+		lock(&fork[0]);
+		lock(&fork[4]);
+		eating(i);
+		unlock(&fork[4]);
+		unlock(&fork[0]);
+	}
+}
+
+task spec dinner();
+task body dinner()
+{    
+	int i;
+	forall i = 0 to 4  {
+		if (i==4)
+            Philosopher5(i);
+        else
+            Philosopher(i); 
+     }
+}
+
+main()
+{  
+	create_sem(&fork[0],1);
+	create_sem(&fork[1],1);
+	create_sem(&fork[2],1);
+	create_sem(&fork[3],1);
+	create_sem(&fork[4],1);
+	create  5,dinner();
+	wait_all();
+	rem_sem(&fork[0]);
+	rem_sem(&fork[1]);
+	rem_sem(&fork[2]);
+	rem_sem(&fork[3]);
+	rem_sem(&fork[4]);
+        printf("x[0]=%d x[1]=%d x[2]=%d  x[3]=%d  x[4]=%d\n",x[0],x[1],x[2],x[3],x[4]);
+        printf("y[0]=%d y[1]=%d y[2]=%d  y[3]=%d  y[4]=%d\n",y[0],y[1],y[2],y[3],y[4]);
+        fflush(stdout);
+
+}

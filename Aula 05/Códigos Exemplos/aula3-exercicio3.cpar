@@ -1,0 +1,80 @@
+/* #define IMPRIME 1 */
+/*multiplicacao de matrizes: outer-product*/
+#include <stdio.h>
+#include <math.h>
+#include <sys/time.h>
+#include "mede_time.h"
+
+shared int SIZE;
+
+shared int a[2000][2000];
+shared int x;
+shared int nprocs;
+shared int ocorrencias;
+/*inicia matriz*/
+task spec init_matrix();
+task body init_matrix()
+  { 
+     int i,j;
+      forall i=0 to (SIZE-1) {  
+       for (j=0;j<SIZE;j++)
+         a[i][j]=i*j;
+      }
+  }
+
+/*busca*/
+task spec busca();
+task body busca()
+  {
+      int i,j,k;
+      shared int contador[16];
+      for (i=0;i<nprocs;i++)
+          contador[i]=0; 
+      forall i=0 to (SIZE-1) {
+         for (j=0;j<SIZE;j++){
+            if (a[i][j] == x){
+               contador[get_mi_id()]++;
+            }
+         } 
+      }
+      ocorrencias=0;
+      for (i=0;i<nprocs;i++)
+          ocorrencias+=contador[i]; 
+  }
+
+ 
+main(argc, argv)
+int argc;
+char **argv;
+{
+
+  if (argc>1) { 
+    SIZE = atoi(argv[1]);
+    printf("Matriz %dx%d\n",SIZE,SIZE);
+  }
+  else {
+    printf("Tamanho da matriz: ");
+    scanf("%d",&SIZE);
+  }
+  if (argc>2) {
+    nprocs = atoi(argv[2]);
+    printf("Usando %d processadores\n",nprocs);
+  }
+  else {
+    printf ("Numero de processadores: ");
+    scanf("%d",&nprocs);
+  }
+  printf("digite um numero de 0 a 9999:");
+  scanf("%d",&x);
+  printf("%d\n",x); 
+  create nprocs, init_matrix();
+  wait_all();
+  TIMER_CLEAR;
+  TIMER_START;
+  create nprocs, busca();
+  wait_all();
+  TIMER_STOP;
+  printf ("TEMPO [%d]: %12.7f\n",SIZE,TIMER_ELAPSED );
+  printf("NUMERO DE OCORRENCIAS=%d\n",ocorrencias);
+}
+
