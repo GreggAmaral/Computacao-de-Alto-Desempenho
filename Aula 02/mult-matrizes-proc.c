@@ -137,7 +137,7 @@ char **argv;
     for(i = 0; i < n_processos; i++) 
         waitpid(pid[i],&status,0);
     TIMER_STOP;
-    printf ("TEMPO MULTIPLICA [SIZE %d]: %12.7f\n",size,TIMER_ELAPSED);
+    printf ("TEMPO MULTIPLICA [SIZE %d]:  %12.7f\n",size,TIMER_ELAPSED);
     printf ("c[0][0]=%f  c[2][1]=%f c[%d][%d]=%f\n",((matrizes *)matriz)->c[0][0],((matrizes *)matriz)->c[2][1],size-1,size-1,((matrizes *)matriz)->c[size-1][size-1]);
     shmdt(matriz);
     shmctl(id_matriz, IPC_RMID, buf); //remove area compartilhada
