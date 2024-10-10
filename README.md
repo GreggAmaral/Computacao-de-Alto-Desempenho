@@ -30,7 +30,7 @@ Os parametros escritos em <span style="color:#35f235"> verde</span> devem ser su
 
   - Compilar um programa
 
-      <code>gcc –o <code style="color:#35f235">nove_arquivo_gerado nome_arquivo_compilado </code> </code>
+      <code>gcc –o <code style="color:green">nove_arquivo_gerado nome_arquivo_compilado </code> </code>
 
    - Compilar com otimizacao 
 
