@@ -5,16 +5,14 @@ int i;
 int n;
 int v[1000];
 
-void inicia_vetor(int n)
-{ 
+void inicia_vetor(int n){ 
 	int i;
 	for(i = 0; i < n; i++) {
 		v[i] = random()%1000;
 	}
 }
 
-void intercala(int p,int q,int r,int v[])
-{
+void intercala(int p,int q,int r,int v[]){
 	int i,j,k;
 	int v_aux[1000];
 	i=p;
@@ -40,13 +38,24 @@ void intercala(int p,int q,int r,int v[])
 		v[i] = v_aux[i-p];
 }
 
-void merge_sort(int p,int r,int v[])
-{
+void merge_sort(int p,int r,int v[]){
 	int q;
-	if (p < r-1){
+	
+	if ( p < r - 1){
+
 		q = (p+r)/2;
-		merge_sort(p,q,v);
-		merge_sort(q,r,v); 
+		
+		#pragma omp task shared(p, q, v)
+		{
+			merge_sort(p,q,v);
+		}
+		
+		#pragma omp task shared(q, r, v)
+		{
+			merge_sort(q,r,v); 
+		}
+
+		#pragma omp taskwait
 		intercala(p,q,r,v);	
 	}
 }
@@ -57,23 +66,21 @@ void main()
 	printf("n:");	
 	scanf("%d",&n);
 	printf("n=%d\n",n); 
+	inicia_vetor(n);
+ 
+	for (i = 0; i < n; i++){
+		printf("%d ",v[i]);
+	}
 
-    #pragma omp parallel num_threads(4)
-    {
-        #pragma omp single 
-        {
-            inicia_vetor(n);
-    
-            for (i = 0; i < n; i++){
-                printf("%d ",v[i]);
-            }
+	printf("\n");
 
-            printf("\n");
-            merge_sort(0,n,v);
-        }
-        
-
-    }
+	#pragma omp parallel num_threads(4)
+	{	
+		#pragma omp single
+		{
+			merge_sort(0,n,v);
+		}
+	}
 
 	for (i = 0; i < n; i++){
 		printf("%d ",v[i]);
