@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <omp.h>
-//#include "mede_time.h"
 
 #define SIZE 1000
 #define num_t 2
 
+int i,j,k;
 int a[SIZE][SIZE];
 int b[SIZE][SIZE];
 int c[SIZE][SIZE];
@@ -13,10 +13,9 @@ int ab[SIZE][SIZE];
 int cd[SIZE][SIZE];
 int r[SIZE][SIZE];
 
+
 int main() {
 
-    //TIMER_CLEAR;
-    //TIMER_START;
 
     #pragma omp parallel for num_threads(2) private(i,j) //inicializar as matrizes
     for(i = 0; i < SIZE; i++){
@@ -59,8 +58,6 @@ int main() {
             r[i][j] = ab[i][j] + cd[i][j];
 
 
-    //TIMER_STOP;
-    //printf ("Tempo de execucao: %12.7f\n",TIMER_ELAPSED);
 
     printf("r[0][0] = %d\n",r[0][0]);
     fflush(stdout);
